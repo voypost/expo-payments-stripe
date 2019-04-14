@@ -235,6 +235,9 @@ EX_EXPORT_METHOD_AS(createSourceWithParams, createSourceWithParams:(NSDictionary
     if ([sourceType isEqualToString:@"alipay"]) {
          sourceParams = [STPSourceParams alipayParamsWithAmount:[[params objectForKey:@"amount"] unsignedIntegerValue] currency:params[@"currency"] returnURL:params[@"returnURL"]];
     }
+    if ([sourceType isEqualToString:@"card"]) {
+        sourceParams = [STPSourceParams cardParamsWithCard:[self createCard:params]];
+    }
 
     [[STPAPIClient sharedClient] createSourceWithParams:sourceParams completion:^(STPSource *source, NSError *error) {
       requestIsCompleted = YES;
@@ -408,6 +411,26 @@ EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)
 
 -(UIViewController*) getViewController {
   return [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+}
+
+- (STPCardParams *)createCard:(NSDictionary *)params {
+    STPCardParams *cardParams = [[STPCardParams alloc] init];
+
+    [cardParams setNumber: params[@"number"]];
+    [cardParams setExpMonth: [params[@"expMonth"] integerValue]];
+    [cardParams setExpYear: [params[@"expYear"] integerValue]];
+    [cardParams setCvc: params[@"cvc"]];
+
+    [cardParams setCurrency: params[@"currency"]];
+    [cardParams setName: params[@"name"]];
+    [cardParams setAddressLine1: params[@"addressLine1"]];
+    [cardParams setAddressLine2: params[@"addressLine2"]];
+    [cardParams setAddressCity: params[@"addressCity"]];
+    [cardParams setAddressState: params[@"addressState"]];
+    [cardParams setAddressCountry: params[@"addressCountry"]];
+    [cardParams setAddressZip: params[@"addressZip"]];
+
+    return cardParams;
 }
 
 - (void)resolvePromise:(id)result {

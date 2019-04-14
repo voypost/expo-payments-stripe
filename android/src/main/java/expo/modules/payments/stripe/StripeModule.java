@@ -331,6 +331,8 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
             (String)options.get("currency"),
             (String)options.get("returnURL"),
             (String)options.get("card"));
+			case "card":
+				sourceParams = SourceParams.createCardParams(Converters.createCard(options));
         break;
     }
 
